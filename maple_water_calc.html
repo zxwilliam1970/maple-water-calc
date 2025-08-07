@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>楓之谷補水效率助手（Artale版）</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        label, input, select {
+            display: block;
+            margin: 10px 0;
+        }
+        .output {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>楓之谷補水效率助手（Artale版）</h1>
+    <h2>法師計算</h2>
+
+    <label for="maxMP">最大 MP：</label>
+    <input type="number" id="maxMP" placeholder="輸入你的最大 MP">
+
+    <label for="mpPercent">補 MP 百分比（例如 10 表示 10%）：</label>
+    <input type="number" id="mpPercent" placeholder="建議設 10～13">
+
+    <label for="magicGuardLevel">魔心技能等級：</label>
+    <input type="number" id="magicGuardLevel" min="1" max="20">
+
+    <label for="magicShieldLevel">魔力之盾技能等級：</label>
+    <input type="number" id="magicShieldLevel" min="1" max="20">
+
+    <button onclick="calculate()">計算</button>
+
+    <div class="output" id="result"></div>
+
+    <script>
+        const magicGuardRates = [
+            0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40,
+            44, 48, 52, 56, 60, 64, 68, 72, 76, 80
+        ];
+        const magicGuardCosts = [
+            0, 6,6,6,6,6,6,6,6,6,6,12,12,12,12,12,12,12,12,12,12
+        ];
+        const magicShieldCosts = [
+            0,8,8,8,8,8,8,8,8,8,8,16,16,16,16,16,16,16,16,16,16
+        ];
+
+        function calculate() {
+            const maxMP = parseInt(document.getElementById("maxMP").value);
+            const mpPercent = parseFloat(document.getElementById("mpPercent").value);
+            const magicGuardLevel = parseInt(document.getElementById("magicGuardLevel").value);
+            const magicShieldLevel = parseInt(document.getElementById("magicShieldLevel").value);
+
+            const autoPotionMP = Math.floor(maxMP * (mpPercent / 100));
+            const guardRatio = magicGuardRates[magicGuardLevel];
+            const guardCost = magicGuardCosts[magicGuardLevel];
+            const shieldCost = magicShieldCosts[magicShieldLevel];
+
+            const result = `
+                🔢 自動補 MP 閾值：${autoPotionMP} MP<br>
+                🛡️ 魔心防禦比率：${guardRatio}%<br>
+                🔋 魔心耗 MP：${guardCost} 每 20 秒<br>
+                🧱 魔力之盾耗 MP：${shieldCost} 每次施放<br>
+                💡 建議：選擇 CP 值最高的補品組合，如藍水、紅豆刨冰、礦泉水。
+            `;
+
+            document.getElementById("result").innerHTML = result;
+        }
+    </script>
+</body>
+</html>
