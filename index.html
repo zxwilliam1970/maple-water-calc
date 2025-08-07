@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>楓之谷補水效率助手（Artale版）</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>楓之谷補水效率助手（Artale版）</h1>
+    <p>目前為法師職業版本</p>
+  </header>
+  <main>
+    <section>
+      <label for="max-mp">最大 MP：</label>
+      <input type="number" id="max-mp" placeholder="請輸入最大 MP" />
+    </section>
+    <section>
+      <label for="mp-threshold">自動補 MP %：</label>
+      <input type="number" id="mp-threshold" placeholder="例如 10 表示 10%" />
+    </section>
+    <section>
+      <label for="magic-guard-level">魔心防禦等級：</label>
+      <input type="number" id="magic-guard-level" min="0" max="20" />
+    </section>
+    <section>
+      <label for="magic-shield-level">魔力之盾等級：</label>
+      <input type="number" id="magic-shield-level" min="0" max="20" />
+    </section>
+    <button id="calculate">計算推薦補品</button>
+    <section id="result"></section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

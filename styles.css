@@ -1,0 +1,32 @@
+body {
+  font-family: sans-serif;
+  background: #f2f2f2;
+  padding: 1em;
+  color: #333;
+}
+header {
+  text-align: center;
+  margin-bottom: 2em;
+}
+input {
+  margin-bottom: 1em;
+  padding: 0.5em;
+}
+section {
+  margin-bottom: 1.5em;
+}
+button {
+  padding: 0.7em 1.2em;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  background: #45a049;
+}
+#result {
+  background: #fff;
+  padding: 1em;
+  border: 1px solid #ccc;
+}
