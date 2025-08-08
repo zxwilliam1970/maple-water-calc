@@ -1,36 +1,340 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>楓之谷補水效率助手（Artale版）</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>楓之谷 補水效率助手（Artale版）</title>
+<style>
+  body{font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f4f6f8;margin:0;padding:16px;color:#222}
+  .wrap{max-width:920px;margin:18px auto;background:#fff;padding:18px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.06)}
+  h1{margin:0 0 8px;color:#c0392b}
+  label{display:block;margin-top:10px;font-size:14px}
+  input,select{padding:8px;width:100%;max-width:320px;margin-top:6px;border-radius:6px;border:1px solid #d0d7dd}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .col{flex:1;min-width:220px}
+  button{margin-top:14px;padding:10px 14px;background:#2d8cf0;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+  .result{margin-top:18px;padding:14px;background:#fbfdff;border-left:4px solid #2d8cf0;border-radius:6px}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{border:1px solid #e6edf3;padding:6px;text-align:center;font-size:13px}
+  th{background:#f7fbff}
+  small{color:#666}
+  .note{font-size:13px;color:#555;margin-top:10px}
+</style>
 </head>
 <body>
-  <header>
-    <h1>楓之谷補水效率助手（Artale版）</h1>
-    <p>目前為法師職業版本</p>
-  </header>
-  <main>
-    <section>
-      <label for="max-mp">最大 MP：</label>
-      <input type="number" id="max-mp" placeholder="請輸入最大 MP" />
-    </section>
-    <section>
-      <label for="mp-threshold">自動補 MP %：</label>
-      <input type="number" id="mp-threshold" placeholder="例如 10 表示 10%" />
-    </section>
-    <section>
-      <label for="magic-guard-level">魔心防禦等級：</label>
-      <input type="number" id="magic-guard-level" min="0" max="20" />
-    </section>
-    <section>
-      <label for="magic-shield-level">魔力之盾等級：</label>
-      <input type="number" id="magic-shield-level" min="0" max="20" />
-    </section>
-    <button id="calculate">計算推薦補品</button>
-    <section id="result"></section>
-  </main>
-  <script src="script.js"></script>
+<div class="wrap">
+  <h1>楓之谷 補水效率助手（Artale版）</h1>
+  <p><small>法師（火毒）專用 — 內建魔心/魔力之盾、678 理論與常用補品資料。填完參數按「計算」看建議。</small></p>
+
+  <!-- 輸入區 -->
+  <div class="row">
+    <div class="col">
+      <label>最大 HP</label>
+      <input id="inpHP" type="number" placeholder="例如 1500" />
+    </div>
+    <div class="col">
+      <label>最大 MP</label>
+      <input id="inpMP" type="number" placeholder="例如 7000" />
+    </div>
+    <div class="col">
+      <label>被擊中頻率（次 / 分鐘，測不到可留 0）</label>
+      <input id="hitsPerMin" type="number" placeholder="例如 30（每分鐘被打 30 次）" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label>魔心防禦 等級（1~20）</label>
+      <select id="magicHeartLevel"></select>
+    </div>
+    <div class="col">
+      <label>魔力之盾 等級（0~20）</label>
+      <select id="magicShieldLevel"></select>
+    </div>
+    <div class="col">
+      <label>模式</label>
+      <select id="mode">
+        <option value="manual">手動（自訂技能施放次數）</option>
+        <option value="678" selected>678 理論（建議預設）</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 技能施放（手動模式可填；若為 678，會用預設估值） -->
+  <div class="row" style="margin-top:10px">
+    <div class="col">
+      <label>瞬間移動 等級（1~20）</label>
+      <input id="teleLevel" type="number" placeholder="等級" />
+    </div>
+    <div class="col">
+      <label>毒霧 等級（1~30）</label>
+      <input id="poisonLevel" type="number" placeholder="等級" />
+    </div>
+    <div class="col">
+      <label>致命毒霧 等級（1~30）</label>
+      <input id="deadlyLevel" type="number" placeholder="等級" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label>瞬間移動 次數 / 分鐘（手動模式）</label>
+      <input id="telePerMin" type="number" placeholder="留空或 0 使用模式預設" />
+    </div>
+    <div class="col">
+      <label>毒霧 次數 / 分鐘（手動模式）</label>
+      <input id="poisonPerMin" type="number" placeholder="留空或 0 使用模式預設" />
+    </div>
+    <div class="col">
+      <label>致命毒霧 次數 / 分鐘（手動模式）</label>
+      <input id="deadlyPerMin" type="number" placeholder="留空或 0 使用模式預設" />
+    </div>
+  </div>
+
+  <div style="margin-top:8px">
+    <label>（選填）魔力激發 是否啟用</label>
+    <select id="mbOn">
+      <option value="0" selected>否</option>
+      <option value="1">是（會增加 MP 消耗倍數）</option>
+    </select>
+  </div>
+
+  <button id="calcBtn">計算</button>
+
+  <!-- 結果區 -->
+  <div id="result" class="result" style="display:none"></div>
+
+  <div class="note">
+    <strong>說明：</strong> 678 理論預設會把自動補 MP 閾值設為 <em>678</em>（若你的 max MP &gt; 678）；你也可以手動調整被擊頻率或每分鐘施法次數以更貼近你的操作。
+  </div>
+</div>
+
+<script>
+/*
+  最終版邏輯說明（簡要）：
+  - 內建魔心（魔心防禦）與魔力之盾等級表（資料來源：你提供）
+  - 內建常用補品（MP / HP 與價格）供 CP 比較
+  - 如果 mode=manual：採用使用者輸入的每分鐘施放次數（若欄位為空，使用預設）
+  - 如果 mode=678：使用預設施放頻率（比較保守/貼合 678 理論）
+  - 輸出：每分鐘 / 每小時 MP 消耗（技能 + 被打轉 MP），所需補品數量與每小時花費，並列出 CP 值排序
+*/
+
+// --- 1) 定義資料：魔心、防盾表（由你提供），以及常用補品（MP／HP／價格）
+const magicHeart = [
+  null,
+  {mpCost:6, duration:30, replace:0.04},{mpCost:6, duration:60, replace:0.08},{mpCost:6, duration:90, replace:0.12},
+  {mpCost:6, duration:120, replace:0.16},{mpCost:6, duration:150, replace:0.20},{mpCost:6, duration:180, replace:0.24},
+  {mpCost:6, duration:210, replace:0.28},{mpCost:6, duration:240, replace:0.32},{mpCost:6, duration:270, replace:0.36},
+  {mpCost:6, duration:300, replace:0.40},{mpCost:12, duration:330, replace:0.44},{mpCost:12, duration:360, replace:0.48},
+  {mpCost:12, duration:390, replace:0.52},{mpCost:12, duration:420, replace:0.56},{mpCost:12, duration:450, replace:0.60},
+  {mpCost:12, duration:480, replace:0.64},{mpCost:12, duration:510, replace:0.68},{mpCost:12, duration:540, replace:0.72},
+  {mpCost:12, duration:570, replace:0.76},{mpCost:12, duration:600, replace:0.80}
+];
+
+const magicShield = [
+  null,
+  {mpCost:8,duration:20,def:2},{mpCost:8,duration:40,def:4},{mpCost:8,duration:60,def:6},{mpCost:8,duration:80,def:8},
+  {mpCost:8,duration:100,def:10},{mpCost:8,duration:120,def:12},{mpCost:8,duration:140,def:14},{mpCost:8,duration:160,def:16},
+  {mpCost:8,duration:180,def:18},{mpCost:8,duration:200,def:20},{mpCost:16,duration:220,def:22},{mpCost:16,duration:240,def:24},
+  {mpCost:16,duration:260,def:26},{mpCost:16,duration:280,def:28},{mpCost:16,duration:300,def:30},{mpCost:16,duration:320,def:32},
+  {mpCost:16,duration:340,def:34},{mpCost:16,duration:360,def:36},{mpCost:16,duration:380,def:38},{mpCost:16,duration:400,def:40}
+];
+
+// 補品資料（以你提供表格常用項目為主 — MP 類與 HP 類）
+// 格式: {id,name, mp, hp, price, note}
+const potions = [
+  // MP 藥水（名稱、MP 補量、價格）
+  {id:'orange', name:'柳橙(小藍)', mp:50, hp:0, price:95, note:'小藍 / 魔森價差略有不同'},
+  {id:'blue_small', name:'藍色藥水(小)', mp:100, hp:0, price:190, note:''},
+  {id:'lemon', name:'檸檬', mp:150, hp:0, price:294, note:''},
+  {id:'energy', name:'活力藥水', mp:300, hp:0, price:589, note:''},
+  {id:'spring', name:'礦泉水', mp:800, hp:0, price:1567, note:'常用CP高(Artale防衛本部價)'}, 
+  {id:'redshavedice', name:'紅豆刨冰', mp:2000, hp:0, price:3800, note:'CP 高但貴'},
+  {id:'dawn', name:'清晨之露', mp:4000, hp:0, price:7695, note:''},
+  {id:'dusk', name:'黃昏之露', mp:5000, hp:0, price:9690, note:''},
+  // 綜合 / HP 藥水常用
+  {id:'chocolate', name:'巧克力(綜合)', mp:1000, hp:1000, price:3000, note:'綜合:HP+MP'},
+  {id:'eel', name:'烤鰻魚 (HP)', mp:0, hp:1000, price:1045, note:'常用 HP 食物'},
+  {id:'cake', name:'蛋糕(小綜合)', mp:100, hp:100, price:304, note:''}
+];
+
+// 內建技能 MP 消耗（依等級映射的部分只包含常用技能等級的消耗；我們用參考值）
+// 瞬間移動（level1..20 消耗表）
+const teleportCostByLevel = [0,60,57,54,51,48,45,42,39,36,33,31,29,27,25,23,21,19,17,15,13]; // level index
+// 毒霧（poison）(level1..30) -> user gave constant MP10 up to 15 then 20 etc. 我們以常見為 10~20
+function poisonCost(level){
+  if(!level) return 0;
+  return (level<=15?10:20);
+}
+// 致命毒霧
+function deadlyCost(level){
+  if(!level) return 0;
+  // from data: level1 mp21 ... increase slowly - we approximate
+  if(level<=10) return 21 + (level-1);
+  if(level<=20) return 30 + (level-10);
+  return 40;
+}
+
+// 魔力激發會造成消耗倍數
+function manaBoostMultiplier(on){
+  return on?2.0:1.0;
+}
+
+// 678 模式的預設施放頻率（每分鐘）：這是保守預設，可以微調
+const presetFreqs_678 = {
+  tele_per_min: 5,   // 瞬移 (用來移位/拉怪) 每分鐘5次
+  poison_per_min: 12, // 毒霧 每分鐘約12次
+  deadly_per_min: 4   // 致命毒霧 每分鐘4次（較頻繁或較少視等級）
+};
+
+// 輔助：把數字格式化為整數千位
+function nf(n){ return n.toLocaleString(); }
+
+// 主計算函式
+function compute(){
+  // 讀輸入
+  const maxHP = Math.max(0, parseInt(document.getElementById('inpHP').value || 0));
+  const maxMP = Math.max(0, parseInt(document.getElementById('inpMP').value || 0));
+  const hitsPerMin = Math.max(0, parseFloat(document.getElementById('hitsPerMin').value || 0));
+  const mhLv = parseInt(document.getElementById('magicHeartLevel').value || 1);
+  const msLv = parseInt(document.getElementById('magicShieldLevel').value || 0);
+  const mode = document.getElementById('mode').value;
+  const teleLv = parseInt(document.getElementById('teleLevel').value || 0);
+  const poisonLv = parseInt(document.getElementById('poisonLevel').value || 0);
+  const deadlyLv = parseInt(document.getElementById('deadlyLevel').value || 0);
+  const telePerMin_user = parseFloat(document.getElementById('telePerMin').value || 0);
+  const poisonPerMin_user = parseFloat(document.getElementById('poisonPerMin').value || 0);
+  const deadlyPerMin_user = parseFloat(document.getElementById('deadlyPerMin').value || 0);
+  const mbOn = document.getElementById('mbOn').value === '1';
+
+  // magic heart / shield data
+  const mh = magicHeart[mhLv];
+  const ms = magicShield[msLv];
+
+  // MP 閾值：若使用 678 理論，推薦用固定 678（若你的 maxMP < 678，則取 maxMP*10%）
+  let mpTrigger;
+  if(mode === '678'){
+    mpTrigger = (maxMP >= 678) ? 678 : Math.ceil(maxMP * 0.10);
+  } else {
+    // 預設用使用者百分比？（我們沒有另設欄位，玩家可手動改這數值）
+    mpTrigger = Math.ceil(maxMP * 0.11);
+  }
+
+  // 技能每分鐘消耗 (以玩家輸入為準；若未輸入、mode=678，使用 preset)
+  const telePerMin = (telePerMin_user>0) ? telePerMin_user : (mode==='678' ? presetFreqs_678.tele_per_min : 0);
+  const poisonPerMin = (poisonPerMin_user>0) ? poisonPerMin_user : (mode==='678' ? presetFreqs_678.poison_per_min : 0);
+  const deadlyPerMin = (deadlyPerMin_user>0) ? deadlyPerMin_user : (mode==='678' ? presetFreqs_678.deadly_per_min : 0);
+
+  // 單次技能 MP 消耗
+  const teleportCost = (teleLv>0 && teleLv<=20) ? teleportCostByLevel[teleLv] : 0;
+  const poisonCostSingle = poisonCost(poisonLv);
+  const deadlyCostSingle = deadlyCost(deadlyLv);
+
+  // 若啟用魔力激發，乘上倍數
+  const mbMul = manaBoostMultiplier(mbOn);
+
+  // 技能每分鐘 MP 消耗
+  const mpSkillPerMin = Math.ceil( (telePerMin*teleportCost + poisonPerMin*poisonCostSingle + deadlyPerMin*deadlyCostSingle) * mbMul );
+
+  // 魔心、魔盾 造成的持續耗魔（取每分鐘平均）
+  // 魔心：消耗 mpCost 每 duration 秒 -> 每分鐘耗 = mpCost / duration * 60
+  const mhMpPerMin = mh ? (mh.mpCost / mh.duration * 60) : 0;
+  // 魔力之盾：每 duration 秒消耗 mpCost -> 每分鐘耗 = mpCost / duration * 60
+  const msMpPerMin = ms ? (ms.mpCost / ms.duration * 60) : 0;
+
+  // 被打造成的 MP 消耗（魔心會將部分傷害改成 MP 承擔）
+  // 假設平均每次被打造成 avgDamage（猜測） - 這裡使用一個合理預設：若 maxHP < 2000 則 avgDamage=500，否則 800
+  const avgDamage = Math.max(200, (maxHP < 2000 ? 500 : 800));
+  // 每次被打時魔心會將 replace% * damage 變成 MP 扣（若沒有魔心則為0）
+  const mhReplaceRate = mh ? mh.replace : 0;
+  const mpAbsorbPerHit = Math.ceil(avgDamage * mhReplaceRate);
+  const mpFromHitsPerMin = Math.ceil(mpAbsorbPerHit * hitsPerMin);
+
+  // 每分鐘總 MP 消耗 = 技能 + 持續技能(魔心/盾) + 被打轉 MP
+  const totalMpPerMin = Math.ceil(mpSkillPerMin + mhMpPerMin + msMpPerMin + mpFromHitsPerMin);
+  const totalMpPerHour = totalMpPerMin * 60;
+
+  // 補品計算：計算每種藥水要補滿「一小時消耗」需要的數量與價格
+  const potResults = potions.map(p => {
+    const needed = Math.ceil(totalMpPerHour / Math.max(1, p.mp)); // 若 p.mp=0(HP only) 則分母為1避免除0；後面會過濾
+    const cost = needed * p.price;
+    const cp = (p.mp>0) ? (p.mp / p.price) : 0;
+    return {...p, needed, cost, cp};
+  }).filter(x => x.mp>0) // 僅列 MP 類藥水為主要比較對象
+  .sort((a,b) => b.cp - a.cp);
+
+  // 推薦：CP 最佳的藥水（單一）
+  const bestPotion = potResults[0];
+
+  // 複合建議：若需 HP 補品（以鰻魚為主要 HP 來源）
+  // 用 hpThreshold（取 80% 為預設）算出每小時需要多少 HP 補回（估算：被打總 HP 損失）
+  // 為簡化：估算每分鐘 HP 損失 = hitsPerMin * avgDamage * (1 - mhReplaceRate)
+  const hpPerMinTaken = Math.ceil(hitsPerMin * avgDamage * (1 - mhReplaceRate));
+  const hpPerHourTaken = hpPerMinTaken * 60;
+  // 找到鰻魚 (id 'eel')
+  const eel = potions.find(p=>p.id==='eel');
+  // 計算鰻魚每小時需要數量（若 eel 存在且 hpPerHourTaken>0）
+  let eelNeeded=0, eelCost=0;
+  if(eel && eel.hp>0 && hpPerHourTaken>0){
+    eelNeeded = Math.ceil(hpPerHourTaken / eel.hp);
+    eelCost = eelNeeded * eel.price;
+  }
+
+  // 輸出結果字串
+  let out = '';
+  out += `<h3>計算結果（估算）</h3>`;
+  out += `<b>基礎參數</b>： 最大 HP ${nf(maxHP)}, 最大 MP ${nf(maxMP)}，每分鐘被打 ${nf(hitsPerMin)} 次（平均傷害 ${nf(avgDamage)}）<br>`;
+  out += `<b>魔心 Lv${mh ? (mhLv) : 0}</b>：替代率 ${(mhReplaceRate*100).toFixed(1)}%，每分鐘耗 MP ${mhMpPerMin.toFixed(2)}<br>`;
+  out += `<b>魔盾 Lv${msLv}</b>：每分鐘耗 MP ${msMpPerMin.toFixed(2)}<br>`;
+  out += `<hr>`;
+  out += `<b>技能 MP 消耗（每分鐘）</b>： ${nf(mpSkillPerMin)} MP / 分鐘<br>`;
+  out += `<b>被打轉 MP（每分鐘）</b>： ${nf(mpFromHitsPerMin)} MP / 分鐘 (每次被打轉 ${nf(mpAbsorbPerHit)} MP)<br>`;
+  out += `<b>系統持續耗 MP（每分鐘）</b>：魔心+魔盾合計 ${nf((mhMpPerMin+msMpPerMin).toFixed(2))} MP / 分鐘<br>`;
+  out += `<h4>→ 每分鐘總耗 MP： ${nf(totalMpPerMin)} MP</h4>`;
+  out += `<h4>→ 每小時總耗 MP： ${nf(totalMpPerHour)} MP</h4>`;
+
+  out += `<hr><h3>補品建議（MP 類，依 CP 值排序）</h3>`;
+  out += `<table><tr><th>補品</th><th>每單位 MP</th><th>價格</th><th>每小時所需數量</th><th>每小時總價</th><th>CP (MP/金幣)</th></tr>`;
+  potResults.forEach(p=>{
+    out += `<tr><td>${p.name}</td><td>${nf(p.mp)}</td><td>${nf(p.price)}</td><td>${nf(p.needed)}</td><td>${nf(p.cost)}</td><td>${p.cp.toFixed(3)}</td></tr>`;
+  });
+  out += `</table>`;
+
+  out += `<hr><h3>推薦組合與備註</h3>`;
+  if(bestPotion){
+    out += `<p>🥇 單一最推薦（CP最高）：<b>${bestPotion.name}</b>（CP=${bestPotion.cp.toFixed(3)}） — 每小時約需 ${nf(bestPotion.needed)} 個，花費 ${nf(bestPotion.cost)}。</p>`;
+  } else {
+    out += `<p>無可用 MP 藥水資料。</p>`;
+  }
+  if(eelNeeded>0){
+    out += `<p>❤️ HP 補品建議：若要補 HP，大多玩家使用 <b>${eel.name}</b>，估計每小時需 ${nf(eelNeeded)} 個，花費 ${nf(eelCost)}。</p>`;
+  } else {
+    out += `<p>HP 損失估計低，或未提供 HP 藥資訊。</p>`;
+  }
+
+  out += `<p class="note"><strong>注意：</strong> 以上為「估算」。實際請以你在練功時的實測資料（被打次數、實際施放頻率、地圖怪物傷害）微調觸發百分比與補品。</p>`;
+
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').innerHTML = out;
+}
+
+// init selects
+(function init(){
+  const mhSel = document.getElementById('magicHeartLevel');
+  const msSel = document.getElementById('magicShieldLevel');
+  for(let i=1;i<=20;i++){
+    const opt1 = document.createElement('option'); opt1.value=i; opt1.textContent=i; mhSel.appendChild(opt1);
+    const opt2 = document.createElement('option'); opt2.value=i; opt2.textContent=i; msSel.appendChild(opt2);
+  }
+  // 預設
+  mhSel.value = 3;
+  msSel.value = 20;
+  document.getElementById('teleLevel').value = 5;
+  document.getElementById('poisonLevel').value = 10;
+  document.getElementById('deadlyLevel').value = 10;
+})();
+
+document.getElementById('calcBtn').addEventListener('click', compute);
+</script>
 </body>
 </html>
