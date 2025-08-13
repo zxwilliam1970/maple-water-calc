@@ -1,399 +1,359 @@
-  <!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>楓之谷補水效率助手（Artale版）｜法師（火毒）</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>楓之谷補水效率助手（Artale版）— 法師：火毒</title>
 <style>
-  :root{--bg:#0b1020;--card:#101935;--muted:#8ea0c7;--fg:#e9efff;--acc:#7bdcff;--grid:#1c2647;--ok:#2fd67f;--warn:#f7bf45;--bad:#ff6b6b}
-  *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans"}
-  .container{max-width:1100px;margin:0 auto;padding:16px}
-  .brand{display:flex;align-items:center;gap:12px;margin:8px 0 16px}
-  .brand h1{font-size:20px;margin:0}
-  .subtitle{color:var(--muted);font-size:13px}
-  .grid{display:grid;grid-template-columns:1fr;gap:12px}
-  @media (min-width:960px){ .grid{grid-template-columns: 1fr 1fr } }
-  .card{background:var(--card);border:1px solid var(--grid);border-radius:14px;padding:14px}
-  .card h2{margin:2px 0 10px;font-size:16px}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .row4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  label{font-size:12px;color:var(--muted)}
-  input,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--grid);background:#0e1730;color:var(--fg);font-size:14px}
-  .help{font-size:12px;color:var(--muted)}
-  .result{display:grid;gap:8px}
-  .callout{border-left:4px solid var(--acc);background:#0f1a39;padding:10px 12px;border-radius:8px}
-  .ok{border-left-color:var(--ok)} .warn{border-left-color:var(--warn)} .bad{border-left-color:var(--bad)}
-  table{width:100%;border-collapse:separate;border-spacing:0 6px}
-  th,td{text-align:left;font-size:13px;padding:8px 10px;background:#0e1730;border:1px solid var(--grid)}
-  th{color:#b9c8ef;background:#0c1630}
-  tr>td:first-child, tr>th:first-child{border-top-left-radius:10px;border-bottom-left-radius:10px}
-  tr>td:last-child, tr>th:last-child{border-top-right-radius:10px;border-bottom-right-radius:10px}
+  :root{
+    --bg:#0b0f14; --panel:#121820; --accent:#22c55e; --muted:#94a3b8; --txt:#e5e7eb; --thin:#1f2937;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0b0f14,#0e141b);color:var(--txt);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  header{padding:24px 16px 8px; text-align:center}
+  h1{margin:0 0 6px;font-size:22px;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:13px}
+  .wrap{max-width:1100px;margin:16px auto;padding:0 12px 48px}
+  .grid{display:grid;gap:12px}
+  @media(min-width:980px){ .grid{ grid-template-columns: 1.2fr 1fr } }
+  .card{background:var(--panel);border:1px solid var(--thin);border-radius:16px;padding:14px}
+  .card h3{margin:0 0 8px;font-size:16px}
+  label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+  input,select{width:100%;background:#0d1219;border:1px solid var(--thin);border-radius:10px;padding:10px 12px;color:var(--txt);outline:none}
+  input:focus,select:focus{border-color:#334155}
+  .row{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+  .row3{display:grid;gap:8px;grid-template-columns:1fr 1fr 1fr}
+  .hint{font-size:12px;color:#9ca3af;margin-top:4px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:black;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  .kpi{display:grid;gap:10px}
+  .kpi .item{background:#0c1117;border:1px solid var(--thin);border-radius:14px;padding:10px}
+  .kpi .big{font-weight:800;font-size:18px}
+  .table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+  .table th,.table td{border-bottom:1px dashed #1f2834;padding:8px 6px;text-align:left}
+  .pill{display:inline-block;background:#0b1622;border:1px solid #143042;color:#93c5fd;font-size:11px;padding:2px 8px;border-radius:999px}
+  .ok{color:#86efac}
+  .bad{color:#fca5a5}
   .muted{color:var(--muted)}
-  .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#14224a;border:1px solid var(--grid);font-size:12px;margin-left:6px}
-  .btn{background:linear-gradient(180deg,#2a74ff,#2156c9);border:none;color:#fff;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
-  .btn:disabled{opacity:.6;cursor:not-allowed}
-  .footer{margin:16px 0 40px;color:var(--muted);font-size:12px}
+  .footer{color:#6b7280;text-align:center;margin-top:28px;font-size:12px}
+  .hr{height:1px;background:#16202c;margin:10px 0 6px;border:0}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="brand">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 13c4 0 7-3 7-7 0 0 0 0 0 0 0 4 3 7 7 7 0 0 0 0 0 0-4 0-7 3-7 7 0 0 0 0 0 0 0-4-3-7-7-7Z" fill="#7BDcff"/></svg>
-    <div>
-      <h1>楓之谷補水效率助手（Artale版）</h1>
-      <div class="subtitle">法師（火毒）｜%自動補建議、678、下一刀可承受、最省補品組合</div>
-    </div>
-  </div>
+<header>
+  <h1>楓之谷補水效率助手（Artale版）</h1>
+  <div class="sub">法師 ‧ 火毒｜同時計算 HP/MP 消耗、魔心防禦分攤，推薦最省錢補品與自動補% 建議</div>
+</header>
 
-  <!-- 基本輸入 -->
-  <div class="grid">
-    <div class="card">
-      <h2>角色與環境</h2>
-      <div class="row">
-        <div><label>最大 HP</label><input id="maxHP" type="number" min="1" value="1200" /></div>
-        <div><label>最大 MP</label><input id="maxMP" type="number" min="1" value="7000" /></div>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <div><label>被撞 / 單次傷害（估）</label><input id="hitDmg" type="number" min="1" value="1350" /></div>
-        <div>
-          <label>自動補模式</label>
-          <select id="autoMode">
-            <option value="678" selected>678 理論</option>
-            <option value="700">目標 700</option>
-            <option value="800">目標 800</option>
-            <option value="manual">手動輸入 %</option>
-          </select>
-        </div>
-      </div>
-      <div class="row" id="manualRow" style="margin-top:8px;display:none">
-        <div><label>HP％ 門檻</label><input id="hpPctManual" type="number" min="1" max="99" value="80" /></div>
-        <div><label>MP％ 門檻</label><input id="mpPctManual" type="number" min="1" max="99" value="10" /></div>
-      </div>
-      <div class="help" style="margin-top:8px">678 會用 ⌊678/最大MP⌋% 作 MP門檻；實際目標取「此門檻」與「下一刀可承受」的較大值。</div>
-    </div>
-
-    <!-- 技能 -->
-    <div class="card">
-      <h2>技能等級（可互動）</h2>
-      <div class="row4">
-        <div><label>魔心防禦 Lv.</label><select id="mgLv"></select></div>
-        <div><label>魔力之盾 Lv.</label><select id="maLv"></select></div>
-        <div><label>瞬間移動 Lv.</label><select id="teleLv"></select></div>
-        <div><label>魔力激發 Lv.</label><select id="ampLv"></select></div>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <div><label>毒霧 Lv.</label><select id="poisonMistLv"></select></div>
-        <div><label>致命毒霧 Lv.</label><select id="poisonFogLv"></select></div>
-      </div>
-      <div class="help" style="margin-top:8px">此工具只計入「耗魔/耗血」與魔心替代率；輸出僅影響補水計算。</div>
-    </div>
-  </div>
-
-  <!-- 價格來源 -->
-  <div class="card" style="margin-top:12px">
-    <h2>補品價格來源</h2>
+<div class="wrap grid">
+  <!-- 左：輸入 -->
+  <section class="card">
+    <h3>輸入條件</h3>
     <div class="row">
+      <div>
+        <label>最大 HP</label>
+        <input id="maxHP" type="number" min="1" value="1500" />
+      </div>
+      <div>
+        <label>最大 MP</label>
+        <input id="maxMP" type="number" min="1" value="7000" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>單次受到傷害（被撞一下）</label>
+        <input id="hitDmg" type="number" min="1" value="1400" />
+      </div>
       <div>
         <label>價格模式</label>
         <select id="priceMode">
-          <option value="min" selected>用最低價（經濟實惠）</option>
-          <option value="loc">指定地點價格</option>
+          <option value="min" selected>最低價（建議，用最省的價格檔）</option>
+          <option value="other">其餘地圖通用價（若有）</option>
         </select>
+        <div class="hint">若某藥水只有一個價格，就用那個價格。</div>
+      </div>
+    </div>
+    <div class="row3">
+      <div>
+        <label>魔心防禦 等級</label>
+        <select id="lvMG"></select>
       </div>
       <div>
-        <label>指定地點（搭配上方「指定地點價格」使用）</label>
-        <select id="priceLoc" disabled></select>
+        <label>瞬間移動 等級</label>
+        <select id="lvTP"></select>
+      </div>
+      <div>
+        <label>致命毒霧 等級</label>
+        <select id="lvFMist"></select>
       </div>
     </div>
-    <div class="help" style="margin-top:8px">切到「指定地點」時，推薦與表格都會以該地點價計算。</div>
-  </div>
-
-  <!-- 結果 -->
-  <div class="grid" style="margin-top:12px">
-    <div class="card">
-      <h2>建議自動補門檻 & 每刀實際消耗</h2>
-      <div class="result" id="summary"></div>
-      <div style="margin-top:10px"><button class="btn" id="recalc">重新計算</button></div>
+    <div class="row">
+      <div>
+        <label>毒霧（2轉） 等級</label>
+        <select id="lvMist"></select>
+      </div>
+      <div>
+        <label>魔力之盾 等級</label>
+        <select id="lvMShield"></select>
+      </div>
     </div>
-    <div class="card">
-      <h2>推薦補品組合（事件成本最省）</h2>
-      <div id="reco"></div>
+    <div class="hr"></div>
+    <div class="row">
+      <button class="btn" id="calcBtn">立即計算</button>
+      <div class="hint">會同時計算 HP/MP 補量與成本，並給出自動補%（含 678 理論）。</div>
     </div>
-  </div>
+  </section>
 
-  <!-- 表格 -->
-  <div class="card" style="margin-top:12px">
-    <h2>補品資料（Artale 版） <span class="badge" id="badgePriceMode">最低價</span></h2>
-    <div class="help">CP = 補量 / 價格；同品多地點會依目前模式顯示。</div>
+  <!-- 右：結果 -->
+  <section class="card">
+    <h3>結果總覽</h3>
+    <div class="kpi">
+      <div class="item">
+        <div class="muted">魔心分攤（依等級）</div>
+        <div><span id="splitTxt" class="big">MP 80% / HP 20%</span></div>
+      </div>
+      <div class="item">
+        <div class="muted">本次受擊實際損失</div>
+        <div class="big">HP <span id="lossHP">—</span> ｜ MP <span id="lossMP">—</span></div>
+      </div>
+      <div class="item">
+        <div class="muted">自動補建議（MP）</div>
+        <div>678 固定：<span id="auto678" class="ok">—</span>　｜　技能化 678：<span id="autoSkill" class="ok">—</span></div>
+        <div class="hint">技能化 678 = 800 − 2× 致命毒霧MP(所選等級) − 2× 瞬移MP(所選等級)，不足 0 視為 0。</div>
+      </div>
+    </div>
 
-    <h3 style="margin:14px 0 6px">HP 藥水</h3>
-    <div id="hpTable"></div>
-
-    <h3 style="margin:14px 0 6px">MP 藥水</h3>
-    <div id="mpTable"></div>
-
-    <h3 style="margin:14px 0 6px">綜合（HP&MP）</h3>
-    <div id="mixTable"></div>
-  </div>
-
-  <div class="footer">Artale-整合最終版。計算以「單次觸發的事件成本」為主，確保自動補後仍能承受下一刀；請依實戰再微調門檻。</div>
+    <h3 style="margin-top:14px">推薦補品（最省事件成本）</h3>
+    <div class="row">
+      <div class="item" style="background:#0c1117;border:1px solid var(--thin);border-radius:14px;padding:10px">
+        <div><span class="pill">HP 補品</span></div>
+        <table class="table" id="hpTable">
+          <thead><tr><th>藥水</th><th>補量</th><th>單價</th><th>需要瓶數</th><th>事件成本</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="item" style="background:#0c1117;border:1px solid var(--thin);border-radius:14px;padding:10px">
+        <div><span class="pill">MP 補品</span></div>
+        <table class="table" id="mpTable">
+          <thead><tr><th>藥水</th><th>補量</th><th>單價</th><th>需要瓶數</th><th>事件成本</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 </div>
 
+<div class="wrap card">
+  <h3>內建資料與規則</h3>
+  <ul class="muted" style="margin-top:6px">
+    <li>魔心防禦：依你提供的等級→替代率/耗MP/持續時間表（Artale 版）。</li>
+    <li>瞬間移動、毒霧、致命毒霧、魔力之盾：等級→耗MP/持續時間表已內建；只計耗魔，不假設固定施放頻率。</li>
+    <li>補品價格：HP/MP 藥水包含多地點價格（例如防衛本部、其餘地圖…），可切換「最低價 / 其餘地圖通用價」。</li>
+    <li>推薦邏輯：以一次受擊的 <b>實際 HP 與 MP 損失</b> 為需求，計算每款藥水在此事件中所需瓶數與總成本，排序取最省。</li>
+  </ul>
+</div>
+
+<div class="footer">© 楓之谷補水效率助手（Artale版） | 火毒專用試用版</div>
+
 <script>
-/* ================= 資料：技能 ================= */
+/* ==============================
+   資料區（依你提供的最終版本）
+   ============================== */
+
+/** 魔心防禦（Artale表）：
+ *  等級1-10：耗MP 6，持續30,60,90,120,150,180,210,240,270,300秒；替代率 4%,8%,...,40%
+ *  等級11-20：耗MP 12，持續330~600秒；替代率 44%~80%（每級+4%）
+ */
 const MAGIC_GUARD = Array.from({length:20}, (_,i)=>{
-  const lv=i+1, ratio=[4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76,80][i];
-  const mpCost = lv<=10?6:12;
-  const durSec = [30,60,90,120,150,180,210,240,270,300,330,360,390,420,450,480,510,540,570,600][i];
-  return {lv, ratio, mpCost, durSec};
+  const lv=i+1;
+  const rate = lv*4; // 4,8,12,...,80
+  const mp = lv<=10?6:12;
+  const dur = lv<=10? 30*lv : 300 + 30*(lv-10);
+  return {lv, rate, mp, dur};
 });
-const MAGIC_ARMOR = Array.from({length:20}, (_,i)=>{
-  const lv=i+1, mpCost=lv<=10?8:16, durSec=[20,40,60,80,100,120,140,160,180,200,220,240,260,280,300,320,340,360,380,400][i];
-  return {lv, mpCost, durSec, def:2*lv};
-});
-const TELEPORT = Array.from({length:20}, (_,i)=>({lv:i+1, mp:[60,57,54,51,48,45,42,39,36,33,31,29,27,25,23,21,19,17,15,13][i]}));
-const POISON_MIST = Array.from({length:30}, (_,i)=>({lv:i+1, mp:(i+1)<=15?10:20}));
-const POISON_FOG  = Array.from({length:30}, (_,i)=>({lv:i+1, mp:21+(i)})); // 1→21, 30→50
-const SPELL_BOOST = Array.from({length:20},(_,i)=>({lv:i+1,hp:[58,56,54,52,50,48,46,44,42,40,39,38,37,36,35,34,33,32,31,30][i],mp:[53,51,49,47,45,43,41,39,37,35,34,33,32,31,30,29,28,27,26,25][i]}));
-const AMP_MAGIC   = Array.from({length:30},(_,i)=>({lv:i+1,costPct:[105,110,115,120,125,130,135,140,145,150,160,155,165,160,170,165,175,170,180,175,185,180,190,185,195,190,205,200,195,200][i], dmgPct:[107,109,111,113,114,115,116,117,118,119,121,121,123,123,125,125,127,127,129,129,131,131,133,133,135,135,137,137,137,140][i]}));
 
-/* ================= 資料：補品（Artale 多地點） ================= */
+/** 瞬間移動（Artale表） */
+const TELEPORT = [
+  60,57,54,51,48,45,42,39,36,33,31,29,27,25,23,21,19,17,15,13
+].map((mp,idx)=>({lv:idx+1, mp}));
+
+/** 毒霧（2轉）（你提供表）*/
+const MIST2 = [
+  {lv:1, mp:10},{lv:2, mp:10},{lv:3, mp:10},{lv:4, mp:10},{lv:5, mp:10},
+  {lv:6, mp:10},{lv:7, mp:10},{lv:8, mp:10},{lv:9, mp:10},{lv:10, mp:10},
+  {lv:11, mp:10},{lv:12, mp:10},{lv:13, mp:10},{lv:14, mp:10},{lv:15, mp:10},
+  {lv:16, mp:20},{lv:17, mp:20},{lv:18, mp:20},{lv:19, mp:20},{lv:20, mp:20},
+  {lv:21, mp:20},{lv:22, mp:20},{lv:23, mp:20},{lv:24, mp:20},{lv:25, mp:20},
+  {lv:26, mp:20},{lv:27, mp:20},{lv:28, mp:20},{lv:29, mp:20},{lv:30, mp:20},
+];
+
+/** 致命毒霧（3轉）（你提供表）*/
+const FMIST3 = Array.from({length:30},(_,i)=>{
+  const lv=i+1;
+  const mp = 20 + (lv-1); // 等級1=21, ... 等級30=50（依你表：21~50）
+  return {lv, mp};
+});
+
+/** 魔力之盾（你提供表）*/
+const MSHIELD = Array.from({length:20},(_,i)=>{
+  const lv=i+1;
+  const mp = lv<=10?8:16;
+  const dur = lv<=10? 20*lv : 200 + 20*(lv-10); // 20,40,...,200,220,...,400
+  const def = 2*lv; // +2,+4,...,+40（僅展示，計算只用 MP）
+  return {lv, mp, dur, def};
+});
+
+/** HP 藥水表（整合多地點價格；min=最低價、other=其餘地圖等通用價）
+ *  轉換率不必內建，計算時即時計。
+ */
 const HP_POTS = [
-  {name:"蘋果", amount:30, prices:{ "防衛本部":28, "其餘地圖":30 }},
-  {name:"紅色藥水/雞蛋", amount:50, prices:{ "玩具城/糖果機/防衛本部":47, "其餘地圖":50 }},
-  {name:"烤肉", amount:100, prices:{ "全藥水店均一價":106 }},
-  {name:"橘色藥水", amount:150, prices:{ "玩具城/糖果機/防衛本部":152, "其餘地圖":160 }},
-  {name:"炸雞", amount:200, prices:{ "玩具城/糖果機":209, "螞蟻洞":220 }},
-  {name:"白色藥水", amount:300, prices:{ "玩具城/糖果機/防衛本部":304, "煉金術士珍任務":310, "其餘地圖":320 }},
-  {name:"大熱狗", amount:300, prices:{ "玩具城/糖果機":304, "螞蟻洞":320 }},
-  {name:"披薩/漢堡", amount:400, prices:{ "玩具城/糖果機":427, "螞蟻洞":450 }},
-  {name:"熱狗堡", amount:500, prices:{ "玩具城/糖果機":503, "螞蟻洞":530 }},
-  {name:"烤鰻魚", amount:1000, prices:{ "防衛本部":1045, "煉金術士珍任務":1060, "多地區通用價":1100, "愛塔-糖果機":1144 }},
-  {name:"棒冰棒", amount:2000, prices:{ "玩具城/糖果機/防衛本部":2185, "多地區通用價":2300 }},
-  {name:"乳酪", amount:4000, prices:{ "冰原/童話村/不夜城/桃花仙境":4500, "愛塔/防衛本部/時間通道":4680 }},
-  {name:"馴鹿奶", amount:5000, prices:{ "冰原/防衛本部/童話村/不夜城/桃花仙境":5600, "愛塔-糖果機/時間通道":5824 }},
+  {name:"蘋果", amount:30,  price_min:28, price_other:30, note:"防衛本部 / 其餘地圖"},
+  {name:"紅色藥水/雞蛋", amount:50, price_min:47, price_other:50, note:"玩具城/糖果機/防衛本部 / 其餘地圖"},
+  {name:"烤肉", amount:100, price_min:106, price_other:106, note:"全藥水店均一價"},
+  {name:"橘色藥水", amount:150, price_min:152, price_other:160, note:"玩具城/糖果機/防衛本部 / 其餘地圖"},
+  {name:"炸雞", amount:200, price_min:209, price_other:220, note:"玩具城/糖果機 / 螞蟻洞"},
+  {name:"白色藥水", amount:300, price_min:304, price_other:320, note:"玩具城/糖果機/防衛本部 / 其餘地圖"},
+  {name:"大熱狗", amount:300, price_min:304, price_other:320, note:"玩具城/糖果機 / 螞蟻洞"},
+  {name:"披薩/漢堡", amount:400, price_min:427, price_other:450, note:"玩具城/糖果機 / 螞蟻洞"},
+  {name:"熱狗堡", amount:500, price_min:503, price_other:530, note:"玩具城/糖果機 / 螞蟻洞"},
+  {name:"烤鰻魚", amount:1000, price_min:1045, price_other:1100, note:"防衛本部 / 多地圖"},
+  {name:"棒冰棒", amount:2000, price_min:2185, price_other:2300, note:"玩具城/糖果機/防衛本部 / 多地圖"},
+  {name:"乳酪", amount:4000, price_min:4500, price_other:4680, note:"冰原等 / 糖果機等"},
+  {name:"馴鹿奶", amount:5000, price_min:5600, price_other:5824, note:"冰原/防衛本部/童話村/桃花等 / 糖果機"},
 ];
+
+/** MP 藥水表（同樣兩套價格）*/
 const MP_POTS = [
-  {name:"柳橙", amount:50, prices:{ "防衛本部":95, "魔森":97, "其餘地圖":100 }},
-  {name:"藍色藥水", amount:100, prices:{ "玩具城/糖果機/防衛本部":190, "魔森":192, "其餘地圖":200 }},
-  {name:"檸檬", amount:150, prices:{ "防衛本部":294, "魔森":305, "其餘地圖":310 }},
-  {name:"沙拉", amount:200, prices:{ "螞蟻洞":420 }},
-  {name:"活力藥水", amount:300, prices:{ "玩具城/糖果機/防衛本部":589, "魔森":604, "其餘地圖":620 }},
-  {name:"礦泉水", amount:800, prices:{ "防衛本部":1567, "煉金術士珍任務":1600, "多地區通用價":1650, "愛塔-糖果機":1716 }},
-  {name:"紅豆刨冰", amount:2000, prices:{ "玩具城/糖果機/防衛本部":3800, "多地區通用價":4000 }},
-  {name:"清晨之露", amount:4000, prices:{ "防衛本部":7695, "冰原/童話村/時間通道/不夜城/桃花仙境":8100, "愛塔-糖果機":8424 }},
-  {name:"黃昏之露", amount:5000, prices:{ "防衛本部":9690, "冰原/童話村/時間通道/不夜城/桃花仙境":10200, "愛塔-糖果機":10608 }},
-];
-const MIX_POTS = [
-  {name:"巧克力(1000/1000)", hp:1000, mp:1000, prices:{ "一般":3000, "玩具城":2850 }},
-  {name:"蛋糕(100/100)", hp:100, mp:100, prices:{ "玩具城/糖果機":304, "螞蟻洞":320 }},
-  {name:"西瓜(1000/1000)", hp:1000, mp:1000, prices:{ "防衛本部":3034, "煉金術士珍任務":3120, "多地區通用價":3200 }},
+  {name:"柳橙", amount:50, price_min:95,  price_other:100, note:"防衛本部 / 其餘地圖"},
+  {name:"藍色藥水", amount:100, price_min:190, price_other:200, note:"玩具城/糖果機/防衛本部 / 其餘地圖"},
+  {name:"檸檬", amount:150, price_min:294, price_other:310, note:"防衛本部 / 其餘地圖"},
+  {name:"沙拉", amount:200, price_min:420, price_other:420, note:"螞蟻洞"},
+  {name:"活力藥水", amount:300, price_min:589, price_other:620, note:"玩具城/糖果機/防衛本部 / 其餘地圖"},
+  {name:"礦泉水", amount:800, price_min:1567, price_other:1650, note:"防衛本部 / 多地圖"},
+  {name:"紅豆刨冰", amount:2000, price_min:3800, price_other:4000, note:"玩具城/糖果機/防衛本部 / 多地圖"},
+  {name:"清晨之露", amount:4000, price_min:7695, price_other:8100, note:"防衛本部 / 多地圖"},
+  {name:"黃昏之露", amount:5000, price_min:9690, price_other:10200, note:"防衛本部 / 多地圖"},
 ];
 
-/* ================= UI 初始化 ================= */
-function fillSelect(id, max){ const el=document.getElementById(id); el.innerHTML=""; for(let i=1;i<=max;i++){ const o=document.createElement("option"); o.value=i; o.textContent=i; el.appendChild(o);} }
-["mgLv","maLv","teleLv"].forEach((id,idx)=>fillSelect(id, id==="teleLv"?20:20));
-fillSelect("ampLv",30); fillSelect("poisonMistLv",30); fillSelect("poisonFogLv",30);
-
-const priceLocSel=document.getElementById("priceLoc");
-const ALL_LOCS = Array.from(new Set([
-  ...HP_POTS.flatMap(p=>Object.keys(p.prices)),
-  ...MP_POTS.flatMap(p=>Object.keys(p.prices)),
-  ...MIX_POTS.flatMap(p=>Object.keys(p.prices))
-]));
-ALL_LOCS.forEach(loc=>{ const opt=document.createElement("option"); opt.value=loc; opt.textContent=loc; priceLocSel.appendChild(opt); });
-priceLocSel.value=ALL_LOCS[0];
-
-const priceModeSel=document.getElementById("priceMode");
-priceModeSel.addEventListener("change", ()=>{
-  const isLoc=priceModeSel.value==="loc";
-  priceLocSel.disabled=!isLoc;
-  document.getElementById("badgePriceMode").textContent=isLoc?`指定地點：${priceLocSel.value}`:"最低價";
-  renderTables(); recalcAll();
-});
-priceLocSel.addEventListener("change", ()=>{ document.getElementById("badgePriceMode").textContent=`指定地點：${priceLocSel.value}`; renderTables(); recalcAll(); });
-
-const autoModeSel=document.getElementById("autoMode");
-autoModeSel.addEventListener("change", ()=>{ document.getElementById("manualRow").style.display = autoModeSel.value==="manual" ? "" : "none"; recalcAll(); });
-
-/* ================= 工具 ================= */
-function pickPrice(prices){ if(priceModeSel.value==="min"){ return Math.min(...Object.values(prices)); } const loc=priceLocSel.value; return (loc in prices)? prices[loc] : Math.min(...Object.values(prices)); }
-function cp(amount, price){ return amount/price; }
-function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
-function floor(n){ return Math.floor(n); }
-
-/* ================= 計算核心 ================= */
-function calcHitLoss(hit, mgLv){
-  const mg=MAGIC_GUARD[mgLv-1]??{ratio:0};
-  const r=mg.ratio/100;
-  return { hpLoss: hit*(1-r), mpLoss: hit*r, mgRatio: mg.ratio };
-}
-
-function suggestThresholds(maxHP,maxMP,hit, mgLv, mode, manualHPpct, manualMPpct, teleLv, fogLv){
-  const loss = calcHitLoss(hit, mgLv);
-  let mpPct;
-  if(mode==="678") mpPct=floor((678/maxMP)*100);
-  else if(mode==="700") mpPct=floor((700/maxMP)*100);
-  else if(mode==="800") mpPct=floor((800/maxMP)*100);
-  else mpPct=clamp(floor(manualMPpct),1,99);
-
-  // 初步目標（％→絕對值）
-  let mpTarget = Math.ceil(mpPct/100 * maxMP);
-  let hpPct = (mode==="manual")? clamp(floor(manualHPpct),1,99)
-                                : clamp(floor(((maxHP - loss.hpLoss)/maxHP)*100)+1,1,99);
-  let hpTarget = Math.ceil(hpPct/100 * maxHP);
-
-  // 技能緩衝（連續操作安全量）
-  const teleMP = TELEPORT[teleLv-1].mp;
-  const fogMP  = POISON_FOG[fogLv-1].mp;
-  const buffer = 2*teleMP + 2*fogMP;
-
-  // **關鍵修正**：自動補後必須能「再扛下一刀」
-  // MP 至少要能吸收下一刀的魔心份額 + 緩衝；HP 至少能扛下一刀留下的 HP 傷害
-  mpTarget = Math.max(mpTarget, Math.ceil(loss.mpLoss + buffer));
-  hpTarget = Math.max(hpTarget, Math.ceil(loss.hpLoss));
-
-  // 轉回顯示百分比（僅作顯示）
-  hpPct = clamp(floor(hpTarget/maxHP*100),1,99);
-  mpPct = clamp(floor(mpTarget/maxMP*100),1,99);
-
-  const note = `自動補後至少可再扛下一刀（HP≥${Math.round(loss.hpLoss)}、MP≥${Math.round(loss.mpLoss)}+緩衝${buffer}）。`;
-  return {hpPct, mpPct, hpTarget, mpTarget, loss, note};
-}
-
-// 事件成本最省：允許一次觸發連吃多瓶，挑總成本最低且浪費最少的
-function bestPotEvent(need, pots){
-  let best=null;
-  for(const p of pots){
-    const price=pickPrice(p.prices);
-    const amount=p.amount;
-    const uses = Math.ceil(need/amount) || 0;
-    const eventCost = uses * price;
-    const over = Math.max(uses*amount - need, 0);
-    const ratio = cp(amount, price);
-    const cand={name:p.name, amount, price, uses, eventCost, over, ratio};
-    if(!best || cand.eventCost<best.eventCost || (cand.eventCost===best.eventCost && cand.over<best.over)){
-      best=cand;
-    }
+/* ==============================
+   工具函式
+   ============================== */
+const $ = sel => document.querySelector(sel);
+function fillSelect(el, maxLv){
+  el.innerHTML='';
+  for(let i=1;i<=maxLv;i++){
+    const op=document.createElement('option');
+    op.value=String(i);
+    op.textContent=String(i);
+    el.appendChild(op);
   }
-  return best;
+}
+function getPrice(item, mode){
+  if(mode==='other' && item.price_other) return item.price_other;
+  return item.price_min ?? item.price_other ?? 0;
+}
+function ceilDiv(a,b){ return Math.ceil(a/b); }
+
+/* 推薦：依單次需求計算事件成本（最省前三名） */
+function recommend(pots, need, mode){
+  const rows = pots.map(p=>{
+    const price = getPrice(p, mode);
+    const uses = Math.max(1, ceilDiv(need, p.amount));
+    const cost = uses * price;
+    const over = uses*p.amount - need;
+    const cp = p.amount/price; // 僅參考
+    return {name:p.name, amount:p.amount, price, uses, cost, over, cp};
+  }).sort((a,b)=> a.cost!==b.cost ? a.cost - b.cost : a.over - b.over);
+  return rows.slice(0, Math.min(3, rows.length));
 }
 
-/* ================= 表格渲染 ================= */
-function renderTable(containerId, headers, rows){
-  const el=document.getElementById(containerId);
-  const table=document.createElement("table");
-  const thead=document.createElement("thead");
-  const trh=document.createElement("tr");
-  headers.forEach(h=>{ const th=document.createElement("th"); th.textContent=h; trh.appendChild(th); });
-  thead.appendChild(trh); table.appendChild(thead);
-  const tbody=document.createElement("tbody");
-  rows.forEach(r=>{ const tr=document.createElement("tr"); r.forEach(c=>{ const td=document.createElement("td"); td.innerHTML=c; tr.appendChild(td); }); tbody.appendChild(tr); });
-  table.appendChild(tbody); el.innerHTML=""; el.appendChild(table);
+/* 技能化 678：依選擇等級換算 */
+function skillBased678(tpLv, fmLv){
+  const tp = TELEPORT[Math.max(1,Math.min(20,tpLv))-1]?.mp ?? 13;
+  const fm = FMIST3[Math.max(1,Math.min(30,fmLv))-1]?.mp ?? 48;
+  const v = 800 - 2*tp - 2*fm;
+  return Math.max(0, v);
 }
 
-function renderTables(){
-  const isLoc = priceModeSel.value==="loc";
-  const hpRows = HP_POTS.map(p=>{ const price=pickPrice(p.prices); const locUsed=Object.keys(p.prices).find(k=>p.prices[k]===price)||"-"; return [p.name, p.amount, price, (p.amount/price).toFixed(3), isLoc? priceLocSel.value : `最低價於「${locUsed}」`]; });
-  renderTable("hpTable", ["藥水名","補量(HP)","價格","轉換率","購買地"], hpRows);
+/* ==============================
+   初始化下拉
+   ============================== */
+fillSelect($('#lvMG'), 20);
+fillSelect($('#lvTP'), 20);
+fillSelect($('#lvFMist'), 30);
+fillSelect($('#lvMist'), 30);
+fillSelect($('#lvMShield'), 20);
+$('#lvMG').value = '20';
+$('#lvTP').value = '20';
+$('#lvFMist').value = '28';
+$('#lvMist').value = '20';
+$('#lvMShield').value = '20';
 
-  const mpRows = MP_POTS.map(p=>{ const price=pickPrice(p.prices); const locUsed=Object.keys(p.prices).find(k=>p.prices[k]===price)||"-"; return [p.name, p.amount, price, (p.amount/price).toFixed(3), isLoc? priceLocSel.value : `最低價於「${locUsed}」`]; });
-  renderTable("mpTable", ["藥水名","補量(MP)","價格","轉換率","購買地"], mpRows);
+/* ==============================
+   主計算
+   ============================== */
+function calc(){
+  const maxHP = Math.max(1, +$('#maxHP').value||0);
+  const maxMP = Math.max(1, +$('#maxMP').value||0);
+  const hitDmg = Math.max(1, +$('#hitDmg').value||0);
+  const priceMode = $('#priceMode').value;
 
-  const mixRows = MIX_POTS.map(p=>{ const price=pickPrice(p.prices); const locUsed=Object.keys(p.prices).find(k=>p.prices[k]===price)||"-"; const ratio=((p.hp+p.mp)/price).toFixed(3); return [p.name, `${p.hp}&${p.mp}`, price, ratio, isLoc? priceLocSel.value : `最低價於「${locUsed}」`]; });
-  renderTable("mixTable", ["藥水名","補量(HP&MP)","價格","比值","購買地"], mixRows);
+  const mgLv = Math.max(1, Math.min(20, +$('#lvMG').value||1));
+  const tpLv = Math.max(1, Math.min(20, +$('#lvTP').value||1));
+  const fmLv = Math.max(1, Math.min(30, +$('#lvFMist').value||1));
+  const mistLv = Math.max(1, Math.min(30, +$('#lvMist').value||1));
+  const shieldLv = Math.max(1, Math.min(20, +$('#lvMShield').value||1));
+
+  const mg = MAGIC_GUARD[mgLv-1];
+  const tp = TELEPORT[tpLv-1];
+  const fm = FMIST3[fmLv-1];
+  const mist = MIST2[mistLv-1];
+  const msh = MSHIELD[shieldLv-1];
+
+  // 受擊分攤
+  const mpLoss = Math.round(hitDmg * (mg.rate/100));
+  const hpLoss = hitDmg - mpLoss;
+
+  // 顯示分攤
+  $('#splitTxt').textContent = `MP ${mg.rate}% / HP ${100-mg.rate}%`;
+  $('#lossHP').textContent = `${hpLoss}`;
+  $('#lossMP').textContent = `${mpLoss}`;
+
+  // 自動補建議（%）
+  const auto678 = Math.floor(678 / maxMP * 100);
+  const autoSkillVal = skillBased678(tpLv, fmLv);
+  const autoSkillPct = Math.floor(autoSkillVal / maxMP * 100);
+  $('#auto678').textContent = `${auto678}%（以 678 理論）`;
+  $('#autoSkill').textContent = `${autoSkillPct}%（依當前技能等級）`;
+
+  // 推薦補品（一次事件）
+  // HP：要能補回 hpLoss
+  const hpRecs = recommend(HP_POTS, hpLoss, priceMode);
+  // MP：要能補回 mpLoss
+  const mpRecs = recommend(MP_POTS, mpLoss, priceMode);
+
+  function fillTable(tbodySel, rows){
+    const tb = document.querySelector(tbodySel);
+    tb.innerHTML='';
+    rows.forEach(r=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.name}</td>
+        <td>${r.amount}</td>
+        <td>${r.price}</td>
+        <td>${r.uses}</td>
+        <td>${r.cost}</td>
+      `;
+      tb.appendChild(tr);
+    });
+  }
+  fillTable('#hpTable tbody', hpRecs);
+  fillTable('#mpTable tbody', mpRecs);
 }
 
-/* ================= 重算（核心輸出） ================= */
-function recalcAll(){
-  const maxHP=+document.getElementById("maxHP").value||1;
-  const maxMP=+document.getElementById("maxMP").value||1;
-  const hitDmg=+document.getElementById("hitDmg").value||0;
-
-  const mgLv=+document.getElementById("mgLv").value||1;
-  const maLv=+document.getElementById("maLv").value||1;
-  const teleLv=+document.getElementById("teleLv").value||1;
-  const ampLv=+document.getElementById("ampLv").value||1;
-  const mistLv=+document.getElementById("poisonMistLv").value||1;
-  const fogLv=+document.getElementById("poisonFogLv").value||1;
-
-  const manualHPpct=+document.getElementById("hpPctManual").value||80;
-  const manualMPpct=+document.getElementById("mpPctManual").value||10;
-  const mode=document.getElementById("autoMode").value;
-
-  const {hpPct, mpPct, hpTarget, mpTarget, loss, note} = suggestThresholds(maxHP,maxMP,hitDmg,mgLv,mode, manualHPpct, manualMPpct, teleLv, fogLv);
-
-  // 受到這刀後的即時 HP/MP
-  const hpAfter = maxHP - loss.hpLoss;
-  const mpAfter = maxMP - loss.mpLoss;
-
-  // 真正缺口（要補到「目標」）
-  // MP/HP 補正：魔力激發只影響技能耗魔，不影響補品；此處不加倍
-  let needHP = Math.max(hpTarget - hpAfter, 0);
-  let needMP = Math.max(mpTarget - mpAfter, 0);
-
-  // 找「事件成本」最省的補法（允許一次觸發連吃多瓶）
-  const hpPick = bestPotEvent(needHP, HP_POTS);
-  const mpPick = bestPotEvent(needMP, MP_POTS);
-
-  // 技能維護（每分鐘）
-  const mg=MAGIC_GUARD[mgLv-1], ma=MAGIC_ARMOR[maLv-1];
-  const mgPerMin = mg ? mg.mpCost * (60/(mg.durSec||60)) : 0;
-  const maPerMin = ma ? ma.mpCost * (60/(ma.durSec||60)) : 0;
-
-  // 極速詠唱/瞬移/毒霧耗魔（含魔力激發倍率）
-  const amp = AMP_MAGIC[ampLv-1]||{costPct:100};
-  const ampRate=(amp.costPct||100)/100;
-  const teleOnce = TELEPORT[teleLv-1].mp * ampRate;
-  const mistOnce = POISON_MIST[mistLv-1].mp * ampRate;
-  const fogOnce  = POISON_FOG[fogLv-1].mp  * ampRate;
-
-  const sum=document.getElementById("summary");
-  sum.innerHTML = `
-    <div class="callout ok">
-      <div>🛡️ 魔心替代率：<b>${mg?.ratio||0}%</b>（Lv.${mgLv}，維護：${mg?.mpCost||0} MP / ${mg?.durSec||0}s）</div>
-      <div>🧷 魔力之盾：Lv.${maLv}（維護：${ma?.mpCost||0} MP / ${ma?.durSec||0}s）</div>
-    </div>
-    <div class="callout">
-      <div>💥 本刀實損 ≈ <b>HP ${Math.round(loss.hpLoss)}</b>、<b>MP ${Math.round(loss.mpLoss)}</b></div>
-      <div class="muted">（傷害 ${hitDmg}；魔心分流 ${mg?.ratio||0}% → MP）</div>
-    </div>
-    <div class="callout">
-      <div>🧮 建議自動補門檻 → HP <b>${hpPct}%</b>（≥本刀HP損），MP <b>${mpPct}%</b>（≥本刀MP損＋緩衝）</div>
-      <div class="muted">${note}</div>
-    </div>
-    <div class="callout">
-      <div>🧱 技能維護（估每分鐘）：魔心 ${mgPerMin.toFixed(1)} MP、魔盾 ${maPerMin.toFixed(1)} MP</div>
-      <div class="muted">瞬移 ${Math.round(teleOnce)} MP／次、毒霧 ${Math.round(mistOnce)} MP／次、致命毒霧 ${Math.round(fogOnce)} MP／次（含魔力激發倍率）</div>
-    </div>
-  `;
-
-  const reco=document.getElementById("reco");
-  const hpCp1000 = hpPick ? (1000*hpPick.price/hpPick.amount).toFixed(1) : "-";
-  const mpCp1000 = mpPick ? (1000*mpPick.price/mpPick.amount).toFixed(1) : "-";
-  reco.innerHTML = `
-    <div class="callout ok">
-      <div>✅ HP：<b>${hpPick.name}</b>　需要補回 <b>${Math.round(needHP)}</b> → <b>每次觸發吃 ${hpPick.uses} 瓶</b>，花費 ≈ <b>$${hpPick.eventCost}</b>
-      <span class="badge">每1000量 ≈ $${hpCp1000}</span></div>
-      <div class="muted">若想減少連吃次數，改用更大瓶（如：烤鰻魚/棒冰棒/乳酪）。</div>
-    </div>
-    <div class="callout ok">
-      <div>✅ MP：<b>${mpPick.name}</b>　需要補回 <b>${Math.round(needMP)}</b> → <b>每次觸發吃 ${mpPick.uses} 瓶</b>，花費 ≈ <b>$${mpPick.eventCost}</b>
-      <span class="badge">每1000量 ≈ $${mpCp1000}</span></div>
-      <div class="muted">魔心吃傷主要在 MP；大缺口情境會自然推薦礦泉水/紅豆刨冰/清晨之露，而非柳橙。</div>
-    </div>
-  `;
-}
-
-/* ================= 表格與事件綁定 ================= */
-function renderAll(){ renderTables(); recalcAll(); }
-document.getElementById("recalc").addEventListener("click", recalcAll);
-["mgLv","maLv","teleLv","ampLv","poisonMistLv","poisonFogLv","maxHP","maxMP","hitDmg","hpPctManual","mpPctManual"].forEach(id=>{
-  document.getElementById(id).addEventListener("input", recalcAll);
-  document.getElementById(id).addEventListener("change", recalcAll);
-});
-renderAll();
+$('#calcBtn').addEventListener('click', calc);
+// 初算一遍
+calc();
 </script>
 </body>
 </html>
